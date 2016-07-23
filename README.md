@@ -1,2 +1,2 @@
 # seb3
-seb3 refactored on base of electron
+Refactoring seb based on electron framework (http://electron.atom.io/)

@@ -1,0 +1,12 @@
+{
+  "name": "seb3",
+  "version": "0.1.0",
+  "main": "main.js",
+  "dependencies": {
+    "base-64": "^0.1.0",
+    "electron-log": "^1.0.14"
+  },
+  "devDependencies": {
+    "electron-prebuilt": "^1.2.8"
+  }
+}
