@@ -4,7 +4,12 @@
   "main": "main.js",
   "dependencies": {
     "base-64": "^0.1.0",
-    "electron-log": "^1.0.14"
+    "electron-log": "^1.0.14",
+    "extend": "^3.0.0",
+    "request": "^2.74.0",
+    "require.async": "^0.1.1",
+    "ssl-root-cas": "^1.2.1",
+    "unirest": "^0.5.0"
   },
   "devDependencies": {
     "electron-prebuilt": "^1.2.8"

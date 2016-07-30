@@ -1,0 +1,10 @@
+.DS_Store
+log.txt
+/profile*
+/certdb/profile*
+*.old
+*.bc
+/notizen.txt
+*.seb
+base64.json
+fs_overlay*
