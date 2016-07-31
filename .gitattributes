@@ -14,5 +14,3 @@
 *.crt -text
 *.key -text
 *.db -text
-/node_modules/**/*.* -text
-/node_modules/**/*.* binary
