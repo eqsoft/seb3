@@ -1,7 +1,13 @@
-const electron = require('electron');
-const {app, BrowserWindow, webContents} = electron;
-const sl = require('./SebLog.jsm');
-const su = require('./SebUtils.jsm');
+const	electron		= require('electron'),
+	{
+		app,
+		BrowserWindow,
+		webContents
+	} 			= electron,
+	sl 			= require('./SebLog.jsm'),
+	su			= require('./SebUtils.jsm');
+
+let 	seb 			= null;
 
 const base = module.exports = {
         id : "SebWin",

@@ -1,4 +1,4 @@
-var 	fs 		= require('fs-extra'),
+var 	fs 		= require('fs'),
 	util 		= require('util'),
 	utils		= require('./utils.js'),
 	crypt		= require('crypto'),
@@ -7,7 +7,7 @@ var 	fs 		= require('fs-extra'),
 	conf		= require('./conf.js'),
 	sebs		= {}, // public sebs with radmon key for table gui
 	_sebs		= {}, // internal sebs with socket object
-	sebmap		= {}, // mapping from wskey to key 
+	sebmap		= {}, // mapping from wskey to key
 	out		= utils.out,
 	adminsExist	= false,
 	handler		= {
@@ -66,7 +66,7 @@ function on_connection(socket) {
 			return;
 		}
 	}
-	
+
 	out("monitor: admin connected");
 	adminsExist = true;
 	addData(socket);
@@ -132,7 +132,7 @@ function on_seb_open(socket) {
             }
         }, 5000);
     }
-    */ 
+    */
 	out("monitor: seb socket open");
 }
 
@@ -184,7 +184,7 @@ function shutdown(seb,data) {
 		socket.send(data); // forward data (same handler and opts object expected on seb client)
 	}
 	catch(e) {
-		console.log(e);	
+		console.log(e);
 	}
 	//out("monitor: socket " + socket.send);
 }
@@ -206,10 +206,10 @@ var monitor = function () {
 	this.init = function(websocketserver) {
 		monitor.wss = websocketserver;
 	}
-	this.on_seb_connection = function( socket ) { on_seb_connection( socket, this ); }; 
-	this.on_seb_connection_error = function( error ) { on_seb_connection_error( error, this ); }; 
+	this.on_seb_connection = function( socket ) { on_seb_connection( socket, this ); };
+	this.on_seb_connection_error = function( error ) { on_seb_connection_error( error, this ); };
 	this.on_seb_open = function() { on_seb_open( this ); } ;
-	this.on_seb_close = function(code, message) { on_seb_close(code, message, this); }; 
+	this.on_seb_close = function(code, message) { on_seb_close(code, message, this); };
 	this.on_seb_error = function(error) { on_seb_error(error, this); };
 	this.on_seb_message = function(data, flags) { on_seb_message(data, flags, this); }; }
 monitor.instance = null;
@@ -222,5 +222,3 @@ monitor.getInstance = function(){
 }
 
 module.exports = monitor.getInstance();
-
-

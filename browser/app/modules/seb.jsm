@@ -1,10 +1,11 @@
-const electron = require('electron');
-const {app} = electron;
-
-const sl = require('./SebLog.jsm');
-const su = require('./SebUtils.jsm');
-const sg = require('./SebConfig.jsm');
-const sw = require('./SebWin.jsm');
+"use strict"
+const	electron 	= require('electron'),
+	{app} 		= electron,
+	sl 		= require('./SebLog.jsm'),
+	su 		= require('./SebUtils.jsm'),
+	sg 		= require('./SebConfig.jsm'),
+	sw 		= require('./SebWin.jsm'),
+	ss		= require('../../../server/app/modules/SebServer.jsm');
 
 let regCmdLine = /\-(.*?)\=(.*)/;
 
@@ -13,6 +14,7 @@ const base = module.exports = {
         cmdline : {},
 	config : null,
 	defaultConfig : null,
+	log : null,
         init : function() {
                 //sl.debug("init " + base.id + " start");
                 base.initCmdLine();
@@ -47,6 +49,12 @@ const base = module.exports = {
 		if (base.config === null) {
 			sl.err("initConfig failed");
 			return false;
+		}
+		if (base.config.sebServerEnabled) {
+			// Do something
+			if (base.config.sebServer.local) {
+				ss.init(base);
+			}
 		}
 		if (!sw.mainWin) {
                         sw.createMainWindow();

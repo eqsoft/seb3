@@ -1,24 +1,25 @@
-var 	fs 	= require('fs-extra'),
-	path	= require('path'),
-	express = require('express'),
-	static = require('serve-static'),
-	basicAuth = require('basic-auth'),
-	auth = require('http-auth'),
-	basic = auth.basic({
+"use strict"
+const 	fs 		= require('fs'),
+	path		= require('path'),
+	express 	= require('express'),
+	basicAuth 	= require('basic-auth'),
+	auth 		= require('http-auth'),
+	basic 		= auth.basic({
 		realm: "Basic Area",
 		file: __dirname + "/users"
-	});
-	directory = require('serve-index'),
-	utils	= require('./utils.js');
+	}),
+	serveStatic = require('serve-static'),
+	serveIndex = require('serve-index'),
+	docRoot = __dirname + '/htdocs';
 
 const 	CA_CN 	= "Simple Signing CA",
 	USR_CN	= "seb.client",
 	ADM_CN	= "seb.admin",
 	monitorPort = 8441,
 	socketPort = 8442,
-	demoApp = true,
-	demoPort = 8443,
-	demoClientCert = false,
+	devApp = true,
+	devPort = 8443,
+	devClientCert = false,
 	socketClientCert = false,
 	monitorClientCert = false,
 	proxy = false,
@@ -27,30 +28,26 @@ const 	CA_CN 	= "Simple Signing CA",
 	proxyTarget = 'http://localhost:'+proxyTargetPort,
 	proxyAuth = true;
 
-var conf = function conf() {
-	if(conf.caller != conf.getInstance){
-		throw new Error("This object cannot be instanciated");
-	}
+const base = module.exports = {
+	caCN : CA_CN,
+	usrCN : USR_CN,
+	admCN : ADM_CN,
+	monitorPort : monitorPort,
+	socketPort : socketPort,
+	devApp : devApp,
+	devPort : devPort,
+	devClientCert : devClientCert,
+	socketClientCert : socketClientCert,
+	monitorClientCert : monitorClientCert,
+	proxy : proxy,
+	proxyServerPort : proxyServerPort,
+	proxyTargetPort : proxyTargetPort,
+	proxyTarget : proxyTarget,
+	proxyAuth : proxyAuth,
+	auth : auth,
+	basic : basic,
 
-	this.caCN = CA_CN;
-	this.usrCN = USR_CN;
-	this.admCN = ADM_CN;
-	this.monitorPort = monitorPort;
-	this.socketPort = socketPort;
-	this.demoApp = demoApp;
-	this.demoPort = demoPort;
-	this.demoClientCert = demoClientCert;
-	this.socketClientCert = socketClientCert;
-	this.monitorClientCert = monitorClientCert;
-	this.proxy = proxy;
-	this.proxyServerPort = proxyServerPort;
-	this.proxyTargetPort = proxyTargetPort;
-	this.proxyTarget = proxyTarget;
-	this.proxyAuth = proxyAuth;
-	this.auth = auth;
-	this.basic = basic;
-
-	this.getClientCertOptions = function() {
+	getClientCertOptions : function() {
 		var options = 	{
 				key:    fs.readFileSync(__dirname + '/ssl/simple.org.key'),
 				cert:   fs.readFileSync(__dirname + '/ssl/simple.org.crt'),
@@ -62,9 +59,9 @@ var conf = function conf() {
 				rejectUnauthorized: false 	// reject invalid client certs
 				}
 		return options;
-	}
+	},
 
-	this.getOptions = function() {
+	getOptions : function() {
 		var options = 	{
 				key:    fs.readFileSync(__dirname + '/ssl/simple.org.key'),
 				cert:   fs.readFileSync(__dirname + '/ssl/simple.org.crt'),
@@ -76,9 +73,9 @@ var conf = function conf() {
 				rejectUnauthorized: false 	// reject invalid client certs
 				}
 		return options;
-	}
+	},
 
-	this.getApp = function() {
+	getApp : function() {
 		var app = express();
 		app["__port"] = 0;
 		var checkClientCert = false;
@@ -104,8 +101,8 @@ var conf = function conf() {
 		});
 
 		// check client certs
-		app.use(function(req,res,next) { // Check Auth: only SSL connection with valid client certs are allowed, otherwise ANONYMOUS (demo certs see: user.p12 and admin.p12
-			if (app.__port == demoPort && demoClientCert) {
+		app.use(function(req,res,next) { // Check Auth: only SSL connection with valid client certs are allowed, otherwise ANONYMOUS (dev certs see: user.p12 and admin.p12
+			if (app.__port == devPort && devClientCert) {
 				checkClientCert = true;
 			}
 
@@ -158,15 +155,15 @@ var conf = function conf() {
 				next();
 			}
 		});
-
-		app.use('/',static(__dirname));
-		app.use('/basic',auth.connect(basic));
-		app.use('/basic',static('demo'));
-		app.use('/demo', static('demo'));
-		app.use('/websocket',static('websocket'));
-		app.use('/websocket/data',directory('websocket/data'));
+		// routes
+		app.use('/', serveStatic(docRoot));
+		app.use('/basic', auth.connect(basic));
+		app.use('/basic', serveStatic(docRoot + '/dev'));
+		app.use('/dev', serveStatic(docRoot + '/dev'));
+		app.use('/websocket', serveStatic(docRoot + '/websocket'));
+		app.use('/websocket/data', serveIndex(docRoot + '/websocket/data',{'icons':true}));
 		app.use('/download', function(req, res) {
-			var file = __dirname + '/demo/res/test.seb';
+			var file = docRoot + '/websocket/data/test.seb';
 			var filename = path.basename(file);
 			//var mimetype = mime.lookup(file);
 			res.setHeader('Content-Disposition', 'attachment; filename=' + filename);
@@ -175,9 +172,9 @@ var conf = function conf() {
 			filestream.pipe(res);
 		});
 		app.use('/json', function(req, res) {
-			//var js = require('./demo/res/config.json');
+			//var js = require('./dev/res/config.json');
 			//console.log(js);
-			var file = __dirname + '/demo/res/config.json';
+			var file = docRoot + '/dev/res/config.json';
 			var js = JSON.parse(fs.readFileSync(file));
 			//res.setHeader('Content-type', 'application/json');
 			//res.json({sebServer: {socket:'jhghg'},bla:'blub',blubber:[1,2,3]});
@@ -186,17 +183,3 @@ var conf = function conf() {
 		return app;
 	}
 }
-conf.instance = null;
-
-/**
- * Singleton getInstance definition
- * @return singleton class
- */
-conf.getInstance = function(){
-	if(this.instance === null){
-		this.instance = new conf();
-	}
-	return this.instance;
-}
-
-module.exports = conf.getInstance();

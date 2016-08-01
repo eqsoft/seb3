@@ -27,13 +27,14 @@
 	"layout.spellcheckDefault" 	: { "cb" : "spellcheckDefault" }
 },
 "sebServer": {
-	"url"    : "https://localhost:8442/websocket/index.html",
-	"socket" : "wss://localhost:8442"
+	"url"    	: "https://localhost:8442/websocket/index.html",
+	"socket"	: "wss://localhost:8442",
+	"local"		: true
 },
+"sebServerEnabled":true,
 "sebScreenshot":false,
 "sebScreenshotImageType":"image/jpeg",
 "sebScreenshotSound":false,
-"sebServerEnabled":false,
 "sebSSLSecurityPolicy": 1,
 "sebToolbarShowReload": true,
 
@@ -212,7 +213,7 @@
 "sendBrowserExamKey":true,
 "showReloadWarning" : true,
 "showTaskBar":false,
-"startURL":"https://localhost:8443/demo/test.html",
+"startURL":"https://localhost:8442/dev/test.html",
 "startURL_":"http://localhost:8338",
 "startURL__":"https://davidwalsh.name/demo/spellcheck.php",
 "startURL___":"sebs://moodle-app2.let.ethz.ch/mod/resource/view.php?id=120434",

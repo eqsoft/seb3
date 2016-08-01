@@ -1,0 +1,15 @@
+{
+  "name": "seb3-server",
+  "version": "0.1.0",
+  "main": "main.js",
+  "dependencies": {
+    "base-64": "^0.1.0",
+    "basic-auth": "^1.0.4",
+    "express": "^4.14.0",
+    "http-auth": "^2.4.4",
+    "http-proxy": "^1.14.0",
+    "serve-index": "^1.8.0",
+    "winston": "^2.2.0",
+    "ws": "^1.1.1"
+  }
+}

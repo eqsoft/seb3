@@ -1,5 +1,5 @@
 var WebSocketServer = require('ws').Server
-, fs = require('fs-extra')
+, fs = require('fs')
 , port = 8706
 , wss = new WebSocketServer({port: 8706});
 
@@ -11,7 +11,7 @@ wss.on('connection', function(ws) {
 			//console.dir(message);
 			var buffer = new Buffer(message);
 			var filestream = fs.createWriteStream(filepath);
-			
+
 			var h = {Handler:"SebFileTransfer",Opts:false};
 			var r = {Handler:"Reconfigure",Opts:{configBase64:""}};
 			filestream.on('finish', function () {

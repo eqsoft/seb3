@@ -1,12 +1,13 @@
-const sl = require('./SebLog.jsm');
+"use strict"
+const	sl 	= require('./SebLog.jsm'),
+	request = require('request'),
+	fs 	= require('fs'),
+	path 	= require('path'),
+	rootCas = require('ssl-root-cas').rootCas,
+	atob 	= require('base-64').decode,
+	btoa 	= require('base-64').encode;
 
-const request = require('request');
-const fs = require('fs');
-const path = require('path');
-const rootCas = require('ssl-root-cas').rootCas;
-
-const atob = require('base-64').decode;
-const btoa = require('base-64').encode;
+let 	seb 	= null;
 
 const base = module.exports = {
         id : "SebUtils",
@@ -70,10 +71,10 @@ const base = module.exports = {
 
 		if (isUrl) { // ToDo: put into SebNet.jsm
 			// https
-			let rootfile = path.resolve('../../../server/ssl/root-ca.crt');
-			let signfile = path.resolve('../../../server/ssl/signing-ca.crt');
-			let crtfile = path.resolve('../../../server/ssl/simple.org.crt');
-			let keyfile = path.resolve('../../../server/ssl/simple.org.key');
+			let rootfile = path.resolve('../../../pki/ca/root-ca.crt');
+			let signfile = path.resolve('../../../pki/ca/signing-ca.crt');
+			let crtfile = path.resolve('../../../pki/certs/simple.org.crt');
+			let keyfile = path.resolve('../../../pki/certs/simple.org.key');
 			let cas = rootCas;
 			cas.push(fs.readFileSync(rootfile));
 			cas.push(fs.readFileSync(signfile));

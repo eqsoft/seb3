@@ -1,3 +1,5 @@
+"use strict"
+let seb	= null;
 //var LEVELS = [ 'error', 'warn', 'info', 'verbose', 'debug', 'silly' ];
 const log = require('electron-log');
 log['init'] = function (obj) {
@@ -8,8 +10,8 @@ log['init'] = function (obj) {
 	if (!seb.cmdline.logfile || (seb.cmdline.logfile!=1 && seb.cmdline.logfile!="1")) {
 		log.transports.file = false;
 	}
+	log['err'] = log.error;
+	seb.log = log;
 }
-
-log['err'] = log.error;
 
 module.exports = log;

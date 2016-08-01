@@ -1,11 +1,14 @@
+"use strict"
 require('require.async')(require);
-const electron = require('electron');
-const {app} = electron;
-const fs = require('fs');
-const extend = require('extend');
-//const path = require('path');
-const sl = require('./SebLog.jsm');
-const su = require('./SebUtils.jsm');
+const	electron 	= require('electron'),
+	{app} 		= electron,
+	fs 		= require('fs'),
+	extend 		= require('extend'),
+	//const path = require('path');
+	sl 		= require('./SebLog.jsm'),
+	su 		= require('./SebUtils.jsm');
+
+let 	seb 		= null;
 
 const base = module.exports = {
         id : "SebConfig",
