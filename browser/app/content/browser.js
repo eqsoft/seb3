@@ -1,50 +1,26 @@
-const remote = require('electron').remote;
-const seb = remote.require('./modules/seb.jsm');
-//const config = remote.require('./modules/SebConfig.jsm');
-//const win = remote.require('./modules/SebWin.jsm');
-const startURL = "";
+const	remote 		= require('electron').remote,
+	seb 		= remote.require('./modules/seb.jsm');
 
-console.log(seb.config.startURL);
+const startURL = seb.config.startURL;
 
+window.onload = onLoad;
 window.onresize = doLayout;
+
 var isLoading = false;
+var webview = null;
 
-onload = function() {
-	var webview = document.querySelector('webview');
+function dq (expr) {
+	return document.querySelector(expr);
+}
+
+function onLoad () {
+	webview = dq('webview');
 	doLayout();
+	setEventHandler();
+	webview.src = startURL;
+}
 
-	document.querySelector('#back').onclick = function() {
-		webview.goBack();
-	};
-
-	document.querySelector('#forward').onclick = function() {
-		webview.goForward();
-	};
-
-	document.querySelector('#home').onclick = function() {
-		navigateTo('http://www.github.com/');
-	};
-
-	document.querySelector('#reload').onclick = function() {
-		if (isLoading) {
-			webview.stop();
-		}
-		else {
-			webview.reload();
-		}
-	};
-	document.querySelector('#reload').addEventListener( 'webkitAnimationIteration',
-		function() {
-			if (!isLoading) {
-				document.body.classList.remove('loading');
-			}
-		});
-
-	document.querySelector('#location-form').onsubmit = function(e) {
-		e.preventDefault();
-		navigateTo(document.querySelector('#location').value);
-	};
-
+function setEventHandler() {
 	webview.addEventListener('close', handleExit);
 	webview.addEventListener('did-start-loading', handleLoadStart);
 	webview.addEventListener('did-stop-loading', handleLoadStop);
@@ -52,18 +28,51 @@ onload = function() {
 	webview.addEventListener('did-get-redirect-request', handleLoadRedirect);
 	webview.addEventListener('did-finish-load', handleLoadCommit);
 
+	dq('#back').onclick = function() {
+		webview.goBack();
+	};
+
+	dq('#forward').onclick = function() {
+		webview.goForward();
+	};
+
+	dq('#home').onclick = function() {
+		navigateTo(startURL);
+	};
+
+	dq('#reload').onclick = function() {
+		if (isLoading) {
+			webview.stop();
+		}
+		else {
+			webview.reload();
+		}
+	};
+
+	dq('#reload').addEventListener( 'webkitAnimationIteration',
+		function() {
+			if (!isLoading) {
+				document.body.classList.remove('loading');
+			}
+		});
+
+	dq('#location-form').onsubmit = function(e) {
+		e.preventDefault();
+		navigateTo(dq('#location').value);
+	};
+
 	// Test for the presence of the experimental <webview> zoom and find APIs.
 	if (typeof(webview.setZoom) == "function" && typeof(webview.find) == "function") {
 		var findMatchCase = false;
-		document.querySelector('#zoom').onclick = function() {
-			if(document.querySelector('#zoom-box').style.display == '-webkit-flex') {closeZoomBox();
+		dq('#zoom').onclick = function() {
+			if(dq('#zoom-box').style.display == '-webkit-flex') {closeZoomBox();
 			}
 			else {
 				openZoomBox();
 			}
 		};
 
-		document.querySelector('#zoom-form').onsubmit = function(e) {
+		dq('#zoom-form').onsubmit = function(e) {
 			e.preventDefault();
 			var zoomText = document.forms['zoom-form']['zoom-text'];
 			var zoomFactor = Number(zoomText.value);
@@ -78,19 +87,19 @@ onload = function() {
 			webview.setZoom(zoomFactor);
 		}
 
-		document.querySelector('#zoom-in').onclick = function(e) {
+		dq('#zoom-in').onclick = function(e) {
 			e.preventDefault();
 			increaseZoom();
 		}
 
-		document.querySelector('#zoom-out').onclick = function(e) {
+		dq('#zoom-out').onclick = function(e) {
 			e.preventDefault();
 			decreaseZoom();
 		}
 
-		document.querySelector('#find').onclick = function() {
-			if(document.querySelector('#find-box').style.display == 'block') {
-				document.querySelector('webview').stopFinding();
+		dq('#find').onclick = function() {
+			if(dq('#find-box').style.display == 'block') {
+				dq('webview').stopFinding();
 				closeFindBox();
 			}
 			else {
@@ -98,12 +107,12 @@ onload = function() {
 			}
 		};
 
-		document.querySelector('#find-text').oninput = function(e) {
+		dq('#find-text').oninput = function(e) {
 			webview.find(document.forms['find-form']['find-text'].value,
 			 {matchCase: findMatchCase});
 		}
 
-		document.querySelector('#find-text').onkeydown = function(e) {
+		dq('#find-text').onkeydown = function(e) {
 			if (event.ctrlKey && event.keyCode == 13) {
 				e.preventDefault();
 				webview.stopFinding('activate');
@@ -111,10 +120,10 @@ onload = function() {
 			}
 		}
 
-		document.querySelector('#match-case').onclick = function(e) {
+		dq('#match-case').onclick = function(e) {
 			e.preventDefault();
 			findMatchCase = !findMatchCase;
-			var matchCase = document.querySelector('#match-case');
+			var matchCase = dq('#match-case');
 			if (findMatchCase) {
 				matchCase.style.color = "blue";
 				matchCase.style['font-weight'] = "bold";
@@ -126,13 +135,13 @@ onload = function() {
 			webview.find(document.forms['find-form']['find-text'].value, {matchCase: findMatchCase});
 		}
 
-		document.querySelector('#find-backward').onclick = function(e) {
+		dq('#find-backward').onclick = function(e) {
 			e.preventDefault();
 			webview.find(document.forms['find-form']['find-text'].value,
 			 {backward: true, matchCase: findMatchCase});
 		}
 
-		document.querySelector('#find-form').onsubmit = function(e) {
+		dq('#find-form').onsubmit = function(e) {
 			e.preventDefault();
 			webview.find(document.forms['find-form']['find-text'].value,
 			 {matchCase: findMatchCase});
@@ -142,27 +151,23 @@ onload = function() {
 		window.addEventListener('keydown', handleKeyDown);
 	}
 	else {
-		var zoom = document.querySelector('#zoom');
-		var find = document.querySelector('#find');
+		var zoom = dq('#zoom');
+		var find = dq('#find');
 		zoom.style.visibility = "hidden";
 		zoom.style.position = "absolute";
 		find.style.visibility = "hidden";
 		find.style.position = "absolute";
 	}
-	//document.querySelector('#location').value = seb.config.startURL;
-	//document.querySelector('#location-form').submit();
-	webview.src = seb.config.startURL;
-	console.log("main window loaded");
 };
 
 function navigateTo(url) {
 	resetExitedState();
-	document.querySelector('webview').src = url;
+	dq('webview').src = url;
 }
 
 function doLayout() {
-	var webview = document.querySelector('webview');
-	var controls = document.querySelector('#controls');
+	var webview = dq('webview');
+	var controls = dq('#controls');
 	var controlsHeight = controls.offsetHeight;
 	var windowWidth = document.documentElement.clientWidth;
 	var windowHeight = document.documentElement.clientHeight;
@@ -172,7 +177,7 @@ function doLayout() {
 	webview.style.width = webviewWidth + 'px';
 	webview.style.height = webviewHeight + 'px';
 
-	var sadWebview = document.querySelector('#sad-webview');
+	var sadWebview = dq('#sad-webview');
 	sadWebview.style.width = webviewWidth + 'px';
 	sadWebview.style.height = webviewHeight * 2/3 + 'px';
 	sadWebview.style.paddingTop = webviewHeight/3 + 'px';
@@ -195,7 +200,7 @@ function resetExitedState() {
 }
 
 function handleFindUpdate(event) {
-	var findResults = document.querySelector('#find-results');
+	var findResults = dq('#find-results');
 	if (event.searchText == "") {
 		findResults.innerText = "";
 	} else {
@@ -205,7 +210,7 @@ function handleFindUpdate(event) {
 
 	// Ensure that the find box does not obscure the active match.
 	if (event.finalUpdate && !event.canceled) {
-		var findBox = document.querySelector('#find-box');
+		var findBox = dq('#find-box');
 		findBox.style.left = "";
 		findBox.style.opacity = "";
 		var findBoxRect = findBox.getBoundingClientRect();
@@ -214,9 +219,9 @@ function handleFindUpdate(event) {
 			// make it semi-transparent otherwise.
 			var potentialLeft = event.selectionRect.left - findBoxRect.width - 10;
 			if (potentialLeft >= 5) {
-	findBox.style.left = potentialLeft + "px";
+				findBox.style.left = potentialLeft + "px";
 			} else {
-	findBox.style.opacity = "0.5";
+				findBox.style.opacity = "0.5";
 			}
 		}
 	}
@@ -256,10 +261,10 @@ function handleKeyDown(event) {
 
 function handleLoadCommit() {
 	resetExitedState();
-	var webview = document.querySelector('webview');
-	document.querySelector('#location').value = webview.getURL();
-	document.querySelector('#back').disabled = !webview.canGoBack();
-	document.querySelector('#forward').disabled = !webview.canGoForward();
+	var webview = dq('webview');
+	dq('#location').value = webview.getURL();
+	dq('#back').disabled = !webview.canGoBack();
+	dq('#forward').disabled = !webview.canGoForward();
 	closeBoxes();
 }
 
@@ -271,8 +276,8 @@ function handleLoadStart(event) {
 	if (!event.isTopLevel) {
 		return;
 	}
-	//document.querySelector('#location').value = event.url;
-	document.querySelector('#location').value = event.url;
+	//dq('#location').value = event.url;
+	dq('#location').value = event.url;
 }
 
 function handleLoadStop(event) {
@@ -290,7 +295,7 @@ function handleLoadAbort(event) {
 
 function handleLoadRedirect(event) {
 	resetExitedState();
-	document.querySelector('#location').value = event.newUrl;
+	dq('#location').value = event.newUrl;
 }
 
 function getNextPresetZoom(zoomFactor) {
@@ -313,7 +318,7 @@ function getNextPresetZoom(zoomFactor) {
 }
 
 function increaseZoom() {
-	var webview = document.querySelector('webview');
+	var webview = dq('webview');
 	webview.getZoom(function(zoomFactor) {
 		var nextHigherZoom = getNextPresetZoom(zoomFactor).high;
 		webview.setZoom(nextHigherZoom);
@@ -322,7 +327,7 @@ function increaseZoom() {
 }
 
 function decreaseZoom() {
-	var webview = document.querySelector('webview');
+	var webview = dq('webview');
 	webview.getZoom(function(zoomFactor) {
 		var nextLowerZoom = getNextPresetZoom(zoomFactor).low;
 		webview.setZoom(nextLowerZoom);
@@ -331,29 +336,29 @@ function decreaseZoom() {
 }
 
 function openZoomBox() {
-	document.querySelector('webview').getZoom(function(zoomFactor) {
+	dq('webview').getZoom(function(zoomFactor) {
 		var zoomText = document.forms['zoom-form']['zoom-text'];
 		zoomText.value = Number(zoomFactor.toFixed(6)).toString();
-		document.querySelector('#zoom-box').style.display = '-webkit-flex';
+		dq('#zoom-box').style.display = '-webkit-flex';
 		zoomText.select();
 	});
 }
 
 function closeZoomBox() {
-	document.querySelector('#zoom-box').style.display = 'none';
+	dq('#zoom-box').style.display = 'none';
 }
 
 function openFindBox() {
-	document.querySelector('#find-box').style.display = 'block';
+	dq('#find-box').style.display = 'block';
 	document.forms['find-form']['find-text'].select();
 }
 
 function closeFindBox() {
-	var findBox = document.querySelector('#find-box');
+	var findBox = dq('#find-box');
 	findBox.style.display = 'none';
 	findBox.style.left = "";
 	findBox.style.opacity = "";
-	document.querySelector('#find-results').innerText= "";
+	dq('#find-results').innerText= "";
 }
 
 function closeBoxes() {
