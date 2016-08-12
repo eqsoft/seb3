@@ -29,9 +29,9 @@
 "sebServer": {
 	"url"    	: "https://localhost:8442/websocket/index.html",
 	"socket"	: "wss://localhost:8442",
-	"local"		: true
+	"local"		: false
 },
-"sebServerEnabled":true,
+"sebServerEnabled":false,
 "sebScreenshot":false,
 "sebScreenshotImageType":"image/jpeg",
 "sebScreenshotSound":false,
@@ -213,8 +213,8 @@
 "sendBrowserExamKey":true,
 "showReloadWarning" : true,
 "showTaskBar":false,
-"startURL":"https://localhost:8442/dev/test.html",
-"startURL_":"http://localhost:8338",
+"startURL_":"https://localhost:8442/dev/test.html",
+"startURL":"https://www.google.de",
 "startURL__":"https://davidwalsh.name/demo/spellcheck.php",
 "startURL___":"sebs://moodle-app2.let.ethz.ch/mod/resource/view.php?id=120434",
 "startURL____":"https://localhost:8443/demo/index.html",

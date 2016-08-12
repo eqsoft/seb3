@@ -23,7 +23,11 @@ const base = module.exports = {
         createMainWindow : function() {
                 sl.debug("createMainWindow start");
                 // Create the browser window.
-                base.mainWin = new BrowserWindow({width: 800, height: 600});
+                base.mainWin = new BrowserWindow({show: false, frame: true });
+		base.mainWin.once('ready-to-show', () => {
+			base.mainWin.maximize();
+			base.mainWin.show();
+		});
                 base.contents = base.mainWin.webContents;
                 //console.dir(base.contents);
                 /*

@@ -1,5 +1,6 @@
 {
-  "name": "seb3-browser",
+  "name": "seb",
+  "productName": "SEB",
   "version": "0.1.0",
   "main": "main.js",
   "dependencies": {
@@ -12,6 +13,7 @@
   },
   "devDependencies": {
     "basic-auth": "^1.0.4",
+    "electron-packager": "^7.5.1",
     "electron-prebuilt": "^1.2.8",
     "express": "^4.14.0",
     "http-auth": "^2.4.4",
